@@ -43,18 +43,32 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Descripción</th>
+          <th>Título</th>
+          <th>Fecha de Vencimiento</th>
           <th>Estado</th>
+          <th class="text-end">Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="task in filteredTasks" :key="task.id">
-          <td>{{ task.id }}</td>
-          <td>{{ task.name }}</td>
-          <td>{{ task.description }}</td>
+          <td>{{ task.title }}</td>
+          <td>{{ task.dueDate }}</td>
           <td>{{ task.completed ? "Completada" : "Pendiente" }}</td>
+          <td class="text-end">
+            <button
+              v-if="!task.completed"
+              @click="markAsCompleted(task.id)"
+              class="btn btn-success btn-sm me-2"
+            >
+              Completar
+            </button>
+            <button
+              @click="viewTask(task.id)"
+              class="btn btn-primary btn-sm"
+            >
+              Ver Tarea
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -79,16 +93,12 @@ export default {
       let tasks = this.tasks;
 
       if (this.filterByStatus) {
-        tasks = tasks.filter((task) => task.completed);
+        tasks = tasks.filter((task) => task.completed === this.showCompleted);
       }
 
       if (this.searchQuery) {
-        tasks = tasks.filter(
-          (task) =>
-            task.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-            task.description
-              .toLowerCase()
-              .includes(this.searchQuery.toLowerCase())
+        tasks = tasks.filter((task) =>
+          task.title.toLowerCase().includes(this.searchQuery.toLowerCase())
         );
       }
 
@@ -103,11 +113,22 @@ export default {
         );
         this.tasks = tasks;
       } catch (error) {
-        console.error("Error al obtener las tareas:", error.response?.data || error.message);
+        console.error(
+          "Error al obtener las tareas:",
+          error.response?.data || error.message
+        );
       }
     },
     goToCreateTask() {
       this.$router.push("/userpage/tasks/create");
+    },
+    markAsCompleted(taskId) {
+      // Aquí agregarías la lógica para marcar una tarea como completada
+      console.log("Tarea completada:", taskId);
+    },
+    viewTask(taskId) {
+      // Redirige a una página de detalle de la tarea
+      this.$router.push(`/userpage/tasks/${taskId}`);
     },
   },
   mounted() {
@@ -124,5 +145,15 @@ export default {
 <style scoped>
 .container {
   max-width: 800px;
+}
+.table th,
+.table td {
+  vertical-align: middle;
+}
+.text-end {
+  text-align: right;
+}
+.btn {
+  margin-left: 5px;
 }
 </style>

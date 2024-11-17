@@ -1,9 +1,9 @@
-// src/services/tasks.service.js
 import axios from "axios";
 
 const API_URL = process.env.VUE_APP_BACKEND_IP;
 
 class TaskService {
+  // Método para crear una nueva tarea
   async create(title, description, dueDate) {
     try {
       const userId = localStorage.getItem("userId"); // Obtén el userId del localStorage
@@ -24,30 +24,79 @@ class TaskService {
       );
       return response.data;
     } catch (error) {
-      console.error("Error al crear tarea:", error.response?.data || error.message);
+      console.error(
+        "Error al crear tarea:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   }
-    // Método para obtener tareas filtradas por userId
-    async filterTasksByUserId(userId) {
-      try {
-        if (!userId) {
-          throw new Error("No se encontró el userId.");
-        }
-  
-        const response = await axios.get(`${API_URL}/task/filter/userId/${userId}`, {
+
+  // Método para obtener tareas filtradas por userId
+  async filterTasksByUserId(userId) {
+    try {
+      if (!userId) {
+        throw new Error("No se encontró el userId.");
+      }
+
+      const response = await axios.get(`${API_URL}/task/filter/userId/${userId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error al filtrar tareas por userId:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
+
+  // Método para obtener los detalles de una tarea por ID
+  async getTaskDetails(taskId) {
+    try {
+      const response = await axios.get(`${API_URL}/task/${taskId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error al obtener los detalles de la tarea:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
+
+  // Método para marcar una tarea como completada
+  async markAsCompleted(taskId) {
+    try {
+      const response = await axios.put(
+        `${API_URL}/task/${taskId}/complete`,
+        {},
+        {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
           },
-        });
-  
-        return response.data;
-      } catch (error) {
-        console.error("Error al filtrar tareas por userId:", error.response?.data || error.message);
-        throw error;
-      }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error al marcar tarea como completada:",
+        error.response?.data || error.message
+      );
+      throw error;
     }
   }
-  
-  export default new TaskService();
+}
+
+export default new TaskService();

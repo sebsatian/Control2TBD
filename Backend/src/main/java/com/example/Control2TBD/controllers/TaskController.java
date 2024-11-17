@@ -14,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/task")
+@CrossOrigin("*")
 public class TaskController {
 
     @Autowired
@@ -102,17 +103,6 @@ public class TaskController {
     @GetMapping("/filter/keyword")
     public ResponseEntity<List<TaskEntity>> filterTasksByKeyword(@RequestParam String keyword) {
         return ResponseEntity.ok(taskService.filterTaskByKeyword(keyword));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<TaskEntity> updateMapping(@PathVariable Long id, @RequestBody TaskEntity newValues) {
-        TaskEntity foundTask = taskService.getTaskById(id);
-        if (foundTask == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        taskService.updateTask(newValues);
-        return ResponseEntity.ok(newValues);
     }
 
     @PutMapping("/markAsDone/{id}")

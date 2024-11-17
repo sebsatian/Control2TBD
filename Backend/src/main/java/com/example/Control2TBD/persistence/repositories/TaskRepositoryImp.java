@@ -26,13 +26,17 @@ public class TaskRepositoryImp implements TaskRepository{
 
     @Override
     public TaskEntity getTaskById(Long id) {
-        String sql = "SELECT * FROM tasks WHERE id = :id";
+        // Consulta SQL corregida
+        String sql = "SELECT id, title, description, due_date AS dueDate, completed, user_id AS userId FROM tasks WHERE id = :id";
+
         try (org.sql2o.Connection con = sql2o.open()) {
             return con.createQuery(sql)
-                    .addParameter("id", id)
-                    .executeAndFetchFirst(TaskEntity.class);
+                    .addParameter("id", id) // El marcador debe coincidir con el nombre en la consulta
+                    .executeAndFetchFirst(TaskEntity.class); // Devuelve la primera coincidencia
         }
     }
+
+
 
     @Override
     public void saveTask(String title, String description, LocalDate dueDate, Long userId) {
@@ -95,8 +99,9 @@ public class TaskRepositoryImp implements TaskRepository{
 
     @Override
     public List<TaskEntity> filterTasksByUserId(Long userId) {
-        String sql = "SELECT id, title, description, due_date AS dueDate, completed FROM tasks WHERE user_id = :userId";
+        String sql = "SELECT id, title, description, due_date AS dueDate, completed, user_id AS userId FROM tasks WHERE user_id = :userId";
         try (Connection con = sql2o.open()) {
+            System.out.println("Filtrando tareas por userId: " + userId);
             return con.createQuery(sql)
                     .addParameter("userId", userId)
                     .executeAndFetch(TaskEntity.class);
@@ -104,6 +109,7 @@ public class TaskRepositoryImp implements TaskRepository{
             throw new RuntimeException("Error al filtrar tareas por ID de usuario: " + userId, e);
         }
     }
+
 
 
     @Override

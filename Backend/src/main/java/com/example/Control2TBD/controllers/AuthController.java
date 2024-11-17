@@ -20,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin("*")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -36,6 +37,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+        // Imprimir los datos recibidos en el backend
+        System.out.println("Datos recibidos en el backend: " + loginDto);
+
         try {
             // Autenticar al usuario con los datos proporcionados
             UsernamePasswordAuthenticationToken loginToken = new UsernamePasswordAuthenticationToken(
@@ -65,6 +69,7 @@ public class AuthController {
                     .body("Credenciales incorrectas.");
         }
     }
+
 
 
     @PostMapping("/register")
