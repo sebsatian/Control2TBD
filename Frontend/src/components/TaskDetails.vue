@@ -2,15 +2,34 @@
   <div class="task-details-container">
     <h2>Detalles de la Tarea</h2>
     <div class="actions mb-3">
-      <button @click="editTask" class="btn btn-primary me-2">Editar Tarea</button>
+      <button @click="editTask" class="btn btn-primary me-3">Editar Tarea</button>
       <button @click="deleteTask" class="btn btn-danger">Eliminar Tarea</button>
     </div>
     <div v-if="task">
-      <p><strong>ID:</strong> {{ task.id }}</p>
-      <p><strong>Título:</strong> {{ task.title }}</p>
-      <p><strong>Descripción:</strong> {{ task.description }}</p>
-      <p><strong>Fecha de Vencimiento:</strong> {{ task.dueDate }}</p>
-      <p><strong>Estado:</strong> {{ task.completed ? "Completada" : "Pendiente" }}</p>
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th>ID</th>
+            <td>{{ task.id }}</td>
+          </tr>
+          <tr>
+            <th>Título</th>
+            <td>{{ task.title }}</td>
+          </tr>
+          <tr>
+            <th>Descripción</th>
+            <td>{{ task.description }}</td>
+          </tr>
+          <tr>
+            <th>Fecha de Vencimiento</th>
+            <td>{{ task.dueDate }}</td>
+          </tr>
+          <tr>
+            <th>Estado</th>
+            <td>{{ task.completed ? "Completada" : "Pendiente" }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <div v-else>
       <p>Cargando detalles de la tarea...</p>
@@ -71,16 +90,28 @@ export default {
   text-align: right;
 }
 
+.actions .btn {
+  margin-right: 10px;
+}
+
+.actions .btn:last-child {
+  margin-right: 0;
+}
+
 h2 {
   color: #333;
 }
 
-p {
-  font-size: 1rem;
-  margin-bottom: 10px;
+.table {
+  margin-top: 20px;
 }
 
-strong {
-  font-weight: 600;
+th {
+  width: 40%;
+  background-color: #f1f1f1;
+}
+
+td {
+  width: 60%;
 }
 </style>

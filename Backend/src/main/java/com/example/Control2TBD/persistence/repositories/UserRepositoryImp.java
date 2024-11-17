@@ -13,23 +13,7 @@ public class UserRepositoryImp implements UserRepository{
     private Sql2o sql2o;
 
     // DEFAULT ------------------------------------------------------------------------------------
-    @Override
-    public List<UserEntity> getAll(){
-        String sql = "SELECT * FROM users";
-        try (org.sql2o.Connection con = sql2o.open()){
-            return con.createQuery(sql).executeAndFetch(UserEntity.class);
-        }
-    }
 
-    @Override
-    public UserEntity getById(Long id){
-        String sql = "SELECT * FROM users WHERE id = :id";
-        try (org.sql2o.Connection con = sql2o.open()){
-            return con.createQuery(sql)
-                    .addParameter("id",id)
-                    .executeAndFetchFirst(UserEntity.class);
-        }
-    }
 
     @Override
     public UserEntity getByUsername(String username) {

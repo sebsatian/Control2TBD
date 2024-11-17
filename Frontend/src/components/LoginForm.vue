@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <h2 class="text-center mb-4">Logueo</h2>
+    <h2 class="text-center mb-4">Iniciar Sesión</h2>
     <form @submit.prevent="login" class="login-form">
       <div class="mb-3">
         <label for="username" class="form-label">Nombre de usuario</label>
@@ -26,7 +26,7 @@
         >
       </div>
 
-      <button type="submit" class="btn btn-primary w-100">Loguearse</button>
+      <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
     </form>
   </div>
 </template>
@@ -49,14 +49,14 @@ export default {
         const response = await loginService.login(this.username, this.password);
 
         // Si la respuesta es exitosa, redirigir al usuario
-        console.log('Usuario logueado:', response);
-        alert('Usuario logueado con éxito');
+        console.log('Sesión Iniciada:', response);
+        alert('Sesión Iniciada');
 
         // Redirigir a la página de usuario
         this.$router.push('/userpage'); // Redirige a /userpage (puedes cambiar la ruta según tu estructura)
       } catch (error) {
-        console.error('Error al loguear el usuario:', error);
-        alert('Error al loguear el usuario');
+        console.error('Error al iniciar sesión:', error);
+        alert('Error al iniciar sesión');
       }
     }
   }

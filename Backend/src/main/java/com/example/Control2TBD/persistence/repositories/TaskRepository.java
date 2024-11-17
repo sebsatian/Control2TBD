@@ -14,10 +14,16 @@ public interface TaskRepository {
     void updateTask(TaskEntity task);
     void deleteTask(TaskEntity task);
 
-    // FILTER
-    List<TaskEntity> filterTasksByStatus(Boolean completed);
+    // FILTERING ----------------------------------------------------------------------------------
+    List<TaskEntity> filterByCompleted(Long userId, Boolean completed);
+
     List<TaskEntity> filterTasksByUserId(Long id);
-    List<TaskEntity> filterTasksByKeyword(String keyword);
+
+    List<TaskEntity> filterByKeyword(Long userId, String keyword);
+
+    List<TaskEntity> getTasksDueInAWeek(Long userId);
+
+    List<TaskEntity> filterTasksByBoth(Long userId, Boolean completed, String keyword);
 
     // UPDATE -------------------------------------------------------------------------------------
     void completeTask(Long taskId);

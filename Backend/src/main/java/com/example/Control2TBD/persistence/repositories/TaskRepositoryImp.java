@@ -31,7 +31,7 @@ public class TaskRepositoryImp implements TaskRepository{
 
         try (org.sql2o.Connection con = sql2o.open()) {
             return con.createQuery(sql)
-                    .addParameter("id", id) // El marcador debe coincidir con el nombre en la consulta
+                    .addParameter("id", id)
                     .executeAndFetchFirst(TaskEntity.class); // Devuelve la primera coincidencia
         }
     }
@@ -53,25 +53,6 @@ public class TaskRepositoryImp implements TaskRepository{
         }
     }
 
-
-
-    @Override
-    public void updateTask(TaskEntity task) {
-        String sql = "UPDATE tasks SET title = :title, description = :description, due_date = :dueDate " +
-                "WHERE id = :id";
-        try (org.sql2o.Connection con = sql2o.open()) {
-            con.createQuery(sql)
-                    .addParameter("title", task.getTitle())
-                    .addParameter("description", task.getDescription())
-                    .addParameter("dueDate", task.getDueDate())
-                    .addParameter("id", task.getId())
-                    .executeUpdate();
-        } catch (Exception e) {
-            throw new RuntimeException("Error al actualizar la tarea con ID: " + task.getId(), e);
-        }
-    }
-
-
     @Override
     public void deleteTask(TaskEntity task) {
         String sql = "DELETE FROM tasks WHERE id = :id";
@@ -85,17 +66,6 @@ public class TaskRepositoryImp implements TaskRepository{
     }
 
     // FILTERING ----------------------------------------------------------------------------------
-    @Override
-    public List<TaskEntity> filterTasksByStatus(Boolean completed) {
-        String sql = "SELECT * FROM tasks WHERE completed = :completed";
-        try (org.sql2o.Connection con = sql2o.open()) {
-            return con.createQuery(sql)
-                    .addParameter("completed", completed)
-                    .executeAndFetch(TaskEntity.class);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al filtrar tareas por estado: " + completed, e);
-        }
-    }
 
     @Override
     public List<TaskEntity> filterTasksByUserId(Long userId) {
@@ -110,19 +80,79 @@ public class TaskRepositoryImp implements TaskRepository{
         }
     }
 
-
-
     @Override
-    public List<TaskEntity> filterTasksByKeyword(String keyword) {
-        String sql = "SELECT * FROM tasks WHERE title ILIKE :keyword OR description ILIKE :keyword";
+    public List<TaskEntity> filterByCompleted(Long userId, Boolean completed) {
+        String sql = "SELECT id, title, description, due_date AS dueDate, completed, user_id AS userId " +
+                "FROM tasks WHERE user_id = :userId AND completed = :completed";
+
         try (org.sql2o.Connection con = sql2o.open()) {
             return con.createQuery(sql)
+                    .addParameter("userId", userId)
+                    .addParameter("completed", completed)
+                    .executeAndFetch(TaskEntity.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al filtrar tareas por estado: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<TaskEntity> filterByKeyword(Long userId, String keyword) {
+        String sql = "SELECT id, title, description, due_date AS dueDate, completed, user_id AS userId " +
+                "FROM tasks WHERE user_id = :userId AND title ILIKE :keyword";
+
+        try (org.sql2o.Connection con = sql2o.open()) {
+            return con.createQuery(sql)
+                    .addParameter("userId", userId)
                     .addParameter("keyword", "%" + keyword + "%")
                     .executeAndFetch(TaskEntity.class);
         } catch (Exception e) {
-            throw new RuntimeException("Error al filtrar tareas por palabra clave: " + keyword, e);
+            throw new RuntimeException("Error al filtrar tareas por palabra clave: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public List<TaskEntity> getTasksDueInAWeek(Long userId) {
+        String sql = "SELECT id, title, description, due_date AS dueDate, completed, user_id AS userId " +
+                "FROM tasks " +
+                "WHERE user_id = :userId AND due_date <= CURRENT_DATE + INTERVAL '7 days'";
+
+        try (org.sql2o.Connection con = sql2o.open()) {
+            return con.createQuery(sql)
+                    .addParameter("userId", userId)
+                    .executeAndFetch(TaskEntity.class);
+        }
+    }
+
+    @Override
+    public List<TaskEntity> filterTasksByBoth(Long userId, Boolean completed, String keyword) {
+        StringBuilder sql = new StringBuilder("SELECT id, title, description, completed, due_date AS dueDate, user_id AS userId FROM tasks WHERE user_id = :userId");
+
+        if (completed != null) {
+            sql.append(" AND completed = :completed");
+        }
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND title ILIKE :keyword");
+        }
+
+        try (Connection con = sql2o.open()) {
+            var query = con.createQuery(sql.toString())
+                    .addParameter("userId", userId);
+
+            if (completed != null) {
+                query.addParameter("completed", completed);
+            }
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                query.addParameter("keyword", "%" + keyword + "%");
+            }
+
+            return query.executeAndFetch(TaskEntity.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al filtrar tareas por ambos criterios", e);
+        }
+    }
+
 
     // UPDATE -------------------------------------------------------------------------------------
     @Override
@@ -134,6 +164,21 @@ public class TaskRepositoryImp implements TaskRepository{
                     .executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException("Error al marcar como completada la tarea con ID: " + taskId, e);
+        }
+    }
+    @Override
+    public void updateTask(TaskEntity task) {
+        String sql = "UPDATE tasks SET title = :title, description = :description, due_date = :dueDate " +
+                "WHERE id = :id";
+        try (org.sql2o.Connection con = sql2o.open()) {
+            con.createQuery(sql)
+                    .addParameter("title", task.getTitle())
+                    .addParameter("description", task.getDescription())
+                    .addParameter("dueDate", task.getDueDate())
+                    .addParameter("id", task.getId())
+                    .executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException("Error al actualizar la tarea con ID: " + task.getId(), e);
         }
     }
 

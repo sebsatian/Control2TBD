@@ -79,7 +79,7 @@
             userId
           );
           alert("Tarea creada con éxito");
-          this.$router.push("userpage/tasks"); // Redirige a la lista de tareas
+          this.$router.push("/userpage/tasks"); // Redirige a la lista de tareas
         } catch (error) {
           console.error("Error al crear la tarea:", error);
           alert("Error al crear la tarea");

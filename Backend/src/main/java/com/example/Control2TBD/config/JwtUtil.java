@@ -1,7 +1,9 @@
 package com.example.Control2TBD.config;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
@@ -10,39 +12,38 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class JwtUtil {
 
-    // Este es el código secreto que está en la fase de firma del JWT
-    // En un ambiente de producción, este valor debe ser guardado en un lugar seguro
-    private static String SECRET = "yo";
-    private static Algorithm ALGORITHM = Algorithm.HMAC256(SECRET);
+    // Clave secreta y algoritmo
+    private static final String SECRET = "yo"; // Cambiar por una clave más segura en producción
+    private static final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET);
 
-    // Este método crea un JWT con el nombre de usuario
+    // Método para crear un JWT
     public String create(String username) {
         return JWT.create()
                 .withSubject(username)
                 .withIssuer("tbd")
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15)) // Modifica este valor para cambiar la duración del token
-                ).sign(ALGORITHM);
-
+                .withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15))) // Duración del token
+                .sign(ALGORITHM);
     }
 
-    // Este método verifica si un JWT es válido
-    public boolean isValid(String jwt){
+    // Método para validar un JWT
+    public boolean isValid(String jwt) {
         try {
             JWT.require(ALGORITHM)
                     .build()
                     .verify(jwt);
-            return true;
+            return true; // Si no lanza excepción, el token es válido
         } catch (JWTVerificationException e) {
+            System.out.println("Token inválido: " + e.getMessage());
             return false;
         }
     }
 
-    // Este método extrae el nombre de usuario de un JWT
-    public String getUsername(String jwt){
-        return JWT.require(ALGORITHM)
+    // Método para extraer el nombre de usuario del JWT
+    public String getUsername(String jwt) {
+        DecodedJWT decodedJWT = JWT.require(ALGORITHM)
                 .build()
-                .verify(jwt)
-                .getSubject();
+                .verify(jwt);
+        return decodedJWT.getSubject(); // Retorna el "subject" del token
     }
 }

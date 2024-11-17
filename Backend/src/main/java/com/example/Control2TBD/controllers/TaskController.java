@@ -73,10 +73,22 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getAll());
     }
 
-    @GetMapping("/filter/status")
-    public ResponseEntity<List<TaskEntity>> filterTasksByStatus(@RequestParam Boolean status) {
-        return ResponseEntity.ok(taskService.filterTaskByStatus(status));
+    @GetMapping("/filter/completed")
+    public ResponseEntity<List<TaskEntity>> filterTasksByCompleted(
+            @RequestParam Long userId,
+            @RequestParam Boolean completed) {
+        if (userId == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        List<TaskEntity> tasks = taskService.filterByCompleted(userId, completed);
+        if (tasks == null || tasks.isEmpty()) {
+            return ResponseEntity.noContent().build(); // HTTP 204 si no hay tareas
+        }
+
+        return ResponseEntity.ok(tasks);
     }
+
     @PutMapping("/edit/{id}")
     public ResponseEntity<TaskEntity> updateTask(@PathVariable Long id, @RequestBody TaskEntity updatedTask) {
         TaskEntity existingTask = taskService.getTaskById(id);
@@ -120,9 +132,60 @@ public class TaskController {
 
 
     @GetMapping("/filter/keyword")
-    public ResponseEntity<List<TaskEntity>> filterTasksByKeyword(@RequestParam String keyword) {
-        return ResponseEntity.ok(taskService.filterTaskByKeyword(keyword));
+    public ResponseEntity<List<TaskEntity>> filterTasksByKeyword(
+            @RequestParam Long userId,
+            @RequestParam String keyword) {
+        if (userId == null || keyword == null || keyword.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        List<TaskEntity> tasks = taskService.filterByKeyword(userId, keyword);
+        if (tasks == null || tasks.isEmpty()) {
+            return ResponseEntity.noContent().build(); // HTTP 204 si no hay tareas
+        }
+
+        return ResponseEntity.ok(tasks);
     }
+
+
+    @GetMapping("/filter/duedate/week")
+    public ResponseEntity<List<TaskEntity>> getTasksDueInAWeek(@RequestParam Long userId) {
+        try {
+            List<TaskEntity> tasks = taskService.getTasksDueInAWeek(userId);
+            if (tasks.isEmpty()) {
+                return ResponseEntity.noContent().build(); // 204 No Content si no hay tareas
+            }
+            return ResponseEntity.ok(tasks);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null); // 400 Bad Request si el userId es inválido
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Error
+        }
+    }
+
+    @GetMapping("/filter/both")
+    public ResponseEntity<List<TaskEntity>> filterTasksByBoth(
+            @RequestParam(value = "userId") Long userId,
+            @RequestParam(value = "completed", required = false) Boolean completed,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+
+        System.out.println("userId: " + userId);
+        System.out.println("completed: " + completed);
+        System.out.println("keyword: " + keyword);
+
+        // Llamamos al servicio para obtener las tareas filtradas por ambos parámetros
+        List<TaskEntity> tasks = taskService.filterTasksByBoth(userId, completed, keyword);
+
+        if (tasks.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(tasks);
+    }
+
+
+
+
 
     @PatchMapping("/complete/{id}")
     public ResponseEntity<Void> completeTask(@PathVariable Long id) {
@@ -151,5 +214,7 @@ public class TaskController {
         taskService.deleteTask(foundTask);
         return ResponseEntity.noContent().build();
     }
+
+
 
 }

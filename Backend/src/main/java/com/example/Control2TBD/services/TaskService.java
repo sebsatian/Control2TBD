@@ -26,31 +26,55 @@ public class TaskService {
         taskRepository.saveTask(title, description, dueDate, userId);
     }
 
-    public void updateTask(TaskEntity task){
-        taskRepository.updateTask(task);
-    }
+
 
     public void deleteTask(TaskEntity task){
         taskRepository.deleteTask(task);
     }
 
     // FILTER
-    public List<TaskEntity> filterTaskByStatus(Boolean status){
-        return taskRepository.filterTasksByStatus(status);
-    }
 
     public List<TaskEntity> filterTaskByUserId(Long userId){
         return taskRepository.filterTasksByUserId(userId);
     }
 
-    public List<TaskEntity> filterTaskByKeyword(String keyword){
-        return taskRepository.filterTasksByKeyword(keyword);
+    public List<TaskEntity> filterByCompleted(Long userId, Boolean completed) {
+        if (userId == null || completed == null) {
+            throw new IllegalArgumentException("userId y completed no pueden ser nulos.");
+        }
+        return taskRepository.filterByCompleted(userId, completed);
     }
+    public List<TaskEntity> filterByKeyword(Long userId, String keyword) {
+        if (userId == null || keyword == null || keyword.trim().isEmpty()) {
+            throw new IllegalArgumentException("userId y keyword no pueden ser nulos o vacíos.");
+        }
+        return taskRepository.filterByKeyword(userId, keyword.trim());
+    }
+
+    public List<TaskEntity> getTasksDueInAWeek(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("El userId no puede ser nulo");
+        }
+        return taskRepository.getTasksDueInAWeek(userId);
+    }
+    public List<TaskEntity> filterTasksByBoth(Long userId, Boolean completed, String keyword) {
+        if (userId == null) {
+            throw new IllegalArgumentException("El userId no puede ser nulo");
+        }
+        // Llamar al repositorio para filtrar
+        return taskRepository.filterTasksByBoth(userId, completed, keyword);
+    }
+
+
+
+
 
     // UPDATE
     public void completeTask(Long taskId) {
         taskRepository.completeTask(taskId);
     }
-
+    public void updateTask(TaskEntity task){
+        taskRepository.updateTask(task);
+    }
 
 }

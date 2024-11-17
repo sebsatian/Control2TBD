@@ -1,27 +1,29 @@
-// src/services/user.service.js
-import axios from 'axios';
+import axios from "axios";
 
 const API_URL = process.env.VUE_APP_BACKEND_IP;
 
 class RegisterService {
   async register(username, password) {
     try {
-      const response = await axios.post(`${API_URL}/auth/register`, {
-        username,
-        password
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
+      const response = await axios.post(
+        `${API_URL}/auth/register`,
+        {
+          username,
+          password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
       return response.data;
     } catch (error) {
-      console.error('Error al registrar el usuario:', error);
+      console.error("Error al registrar el usuario:", error);
       throw error; // Esto permitirá manejar el error desde donde se llama este método
     }
   }
 }
-
 
 class LoginService {
   async login(username, password) {
@@ -49,10 +51,42 @@ class LoginService {
       throw error;
     }
   }
+
+  async checkToken() {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      const response = await axios.post(
+        `${API_URL}/auth/check-token`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data; // Si el token es válido, devuelve los datos
+    } catch (error) {
+      console.error("Error al verificar el token:", error);
+      throw error;
+    }
+  }
 }
 
-
-
+// Función independiente para validar la sesión
+async function validateSession() {
+  const loginService = new LoginService();
+  try {
+    await loginService.checkToken(); // Llama al método para validar el token
+    return true; // Si el token es válido, continúa
+  } catch (error) {
+    alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+    localStorage.removeItem("jwtToken"); // Limpia el token si es inválido
+    localStorage.removeItem("userId"); // Limpia el userId si es inválido
+    window.location.href = "/"; // Redirige a la página principal
+    return false; // Bloquea el acceso
+  }
+}
 
 export const registerService = new RegisterService();
 export const loginService = new LoginService();
+export { validateSession };

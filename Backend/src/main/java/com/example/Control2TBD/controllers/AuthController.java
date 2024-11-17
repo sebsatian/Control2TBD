@@ -72,6 +72,7 @@ public class AuthController {
 
 
 
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto registerDto) {
         // Verificar si el usuario ya existe
@@ -96,6 +97,28 @@ public class AuthController {
                     .body("Error al registrar usuario.");
         }
     }
+    @PostMapping("/check-token")
+    public ResponseEntity<?> checkToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+        try {
+            if (token == null || !token.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token inválido.");
+            }
+
+            token = token.replace("Bearer ", ""); // Eliminar prefijo "Bearer"
+            boolean isValid = jwtUtil.isValid(token); // Usar isValid en lugar de validateToken
+
+            if (!isValid) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token inválido.");
+            }
+
+            return ResponseEntity.ok(Map.of("message", "Token válido"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al validar el token: " + e.getMessage());
+        }
+    }
+
+
 
 
 }
