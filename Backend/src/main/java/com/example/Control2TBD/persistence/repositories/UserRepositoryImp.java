@@ -44,11 +44,15 @@ public class UserRepositoryImp implements UserRepository{
     @Override
     public void saveUser(UserEntity user) {
         String sql = "INSERT INTO users (username, password) VALUES (:username, :password)";
-        try (org.sql2o.Connection con = sql2o.open()) {
+        try (org.sql2o.Connection con = sql2o.beginTransaction()) { // Usar una transacción explícita
             con.createQuery(sql)
                     .addParameter("username", user.getUsername())
                     .addParameter("password", user.getPassword())
                     .executeUpdate();
+            con.commit(); // Confirma la transacción
+        } catch (Exception e) {
+            throw new RuntimeException("Error al guardar el usuario", e);
         }
     }
+
 }

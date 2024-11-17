@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -29,20 +30,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable) // Deshabilita CSRF por ser una API
-            .cors((cors) -> {}) // Habilita CORS
-            .authorizeHttpRequests(authorize -> authorize // Configura las rutas que requieren autenticación
-                .requestMatchers("/auth/**").permitAll() // Todos pueden acceder a /auth/**
-                .anyRequest().authenticated() // Todas las demás rutas requieren autenticación
-            )
-            .sessionManagement(session -> session // Configura la política de creación de sesiones
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No se crean sesiones
-            )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Agrega el filtro de JWT antes del filtro de autenticación
+                .csrf(AbstractHttpConfigurer::disable) // Deshabilita CSRF por ser una API
+                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Usa el bean definido en CorsConfig
+                .authorizeHttpRequests(authorize -> authorize // Configura las rutas que requieren autenticación
+                        .requestMatchers("/auth/**").permitAll() // Todos pueden acceder a /auth/**
+                        .anyRequest().authenticated() // Todas las demás rutas requieren autenticación
+                )
+                .sessionManagement(session -> session // Configura la política de creación de sesiones
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No se crean sesiones
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Agrega el filtro de JWT antes del filtro de autenticación
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

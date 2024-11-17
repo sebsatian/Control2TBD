@@ -32,38 +32,50 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginDto loginDto) {
-        try { // Intentar autenticar al user
-            UsernamePasswordAuthenticationToken login = new UsernamePasswordAuthenticationToken(
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+        try {
+            // Autenticar al usuario con los datos proporcionados
+            UsernamePasswordAuthenticationToken loginToken = new UsernamePasswordAuthenticationToken(
                     loginDto.getUsername(),
-                    loginDto.getPassword());
-            authenticationManager.authenticate(login);
+                    loginDto.getPassword()
+            );
+            authenticationManager.authenticate(loginToken);
 
-            // Si la autenticación fue exitosa, crear un JWT y devolverlo en el header
-            String jwt = this.jwtUtil.create(loginDto.getUsername());
+            // Si la autenticación es exitosa, generar JWT
+            String jwt = jwtUtil.create(loginDto.getUsername());
 
-            return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, jwt).build();
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.AUTHORIZATION, jwt)
+                    .body("Login exitoso. Token generado.");
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Credenciales incorrectas.");
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegisterDto registerDto) {
-        // SEARCH IF USER EXISTS
+    @PostMapping(value = "/register", consumes = "application/json")
+    public ResponseEntity<?> register(@RequestBody RegisterDto registerDto) {
+        // Verificar si el usuario ya existe
         UserEntity foundUser = userRepository.getByUsername(registerDto.getUsername());
-        if (foundUser == null){
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        if (foundUser != null) { // Usuario ya existe
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
         }
 
-        //USER DOES NOT EXIST, SO CREATE NEW ONE
-        UserEntity newUser = new UserEntity(
-                null,
-                registerDto.getUsername(),
-                passwordEncoder.encode(registerDto.getPassword())
-        );
-        userRepository.saveUser(newUser);
 
-        return ResponseEntity.ok().build();
+        try {
+            // Crear nuevo usuario
+            UserEntity newUser = new UserEntity(
+                    null, // ID autogenerado
+                    registerDto.getUsername(),
+                    passwordEncoder.encode(registerDto.getPassword()) // Encriptar contraseña
+            );
+            userRepository.saveUser(newUser);
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Usuario registrado exitosamente.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al registrar usuario.");
+        }
     }
 }
