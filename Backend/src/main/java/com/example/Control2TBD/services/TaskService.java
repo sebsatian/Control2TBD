@@ -5,6 +5,7 @@ import com.example.Control2TBD.persistence.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -21,8 +22,8 @@ public class TaskService {
         return taskRepository.getTaskById(id);
     }
 
-    public void saveTask(TaskEntity task){
-        taskRepository.saveTask(task);
+    public void saveTask(String title, String description, LocalDate dueDate, Long userId) {
+        taskRepository.saveTask(title, description, dueDate, userId);
     }
 
     public void updateTask(TaskEntity task){

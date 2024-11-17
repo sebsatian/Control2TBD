@@ -1,11 +1,5 @@
 package com.example.Control2TBD.config;
 
-// ==========================================
-// ==========================================
-//          Configurar rutas
-// ==========================================
-// ==========================================
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
+
     private final JwtFilter jwtFilter;
 
     public SecurityConfig(JwtFilter jwtFilter) {
@@ -32,19 +27,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Deshabilita CSRF por ser una API
-                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Usa el bean definido en CorsConfig
-                .authorizeHttpRequests(authorize -> authorize // Configura las rutas que requieren autenticación
-                        .requestMatchers("/auth/**").permitAll() // Todos pueden acceder a /auth/**
-                        .anyRequest().authenticated() // Todas las demás rutas requieren autenticación
+                // Deshabilitar CSRF porque es una API
+                .csrf(AbstractHttpConfigurer::disable)
+
+                // Configurar CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+
+                // Configuración de rutas
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/auth/**").permitAll() // Permitir acceso sin autenticación a /auth/**
+                        .anyRequest().authenticated() // Requiere autenticación para las demás rutas
                 )
-                .sessionManagement(session -> session // Configura la política de creación de sesiones
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No se crean sesiones
+
+                // Configurar política de sesiones stateless
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Agrega el filtro de JWT antes del filtro de autenticación
+
+                // Agregar el filtro JWT antes del filtro de autenticación
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -54,5 +58,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    } // Configura el encriptador de contraseñas
+    }
 }

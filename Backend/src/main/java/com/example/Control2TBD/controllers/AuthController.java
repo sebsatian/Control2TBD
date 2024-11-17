@@ -15,6 +15,9 @@ import com.example.Control2TBD.persistence.dto.RegisterDto;
 import com.example.Control2TBD.persistence.entities.UserEntity;
 import com.example.Control2TBD.persistence.repositories.UserRepository;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -44,23 +47,33 @@ public class AuthController {
             // Si la autenticación es exitosa, generar JWT
             String jwt = jwtUtil.create(loginDto.getUsername());
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, jwt)
-                    .body("Login exitoso. Token generado.");
+            // Obtener el usuario autenticado de la base de datos
+            UserEntity user = userRepository.getByUsername(loginDto.getUsername());
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Usuario no encontrado.");
+            }
+
+            // Construir la respuesta con el token y la userId
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", jwt);
+            response.put("userId", user.getId());
+
+            return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Credenciales incorrectas.");
         }
     }
 
-    @PostMapping(value = "/register", consumes = "application/json")
+
+    @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto registerDto) {
         // Verificar si el usuario ya existe
         UserEntity foundUser = userRepository.getByUsername(registerDto.getUsername());
         if (foundUser != null) { // Usuario ya existe
             return ResponseEntity.status(HttpStatus.CONFLICT).body("El usuario ya existe.");
         }
-
 
         try {
             // Crear nuevo usuario
@@ -78,4 +91,6 @@ public class AuthController {
                     .body("Error al registrar usuario.");
         }
     }
+
+
 }

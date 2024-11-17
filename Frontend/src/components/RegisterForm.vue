@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import RegisterService from '@/services/register.service';
+import { registerService } from '@/services/user.service';
 
 export default {
   name: 'RegisterForm',
@@ -57,14 +57,20 @@ export default {
   },
   methods: {
     async register() {
+      // Verificar si las contraseñas coinciden
       if (this.password !== this.confirmPassword) {
         alert('Las contraseñas no coinciden');
         return;
       }
+
       try {
-        const response = await RegisterService.register(this.username, this.password);
+        // Llamada al servicio de registro
+        const response = await registerService.register(this.username, this.password);
         console.log('Usuario registrado:', response);
         alert('Usuario registrado con éxito');
+
+        // Redirigir al usuario a la página de login
+        this.$router.push('/login');  // Redirige a la página de login
       } catch (error) {
         console.error('Error al registrar el usuario:', error);
         alert('Error al registrar el usuario');

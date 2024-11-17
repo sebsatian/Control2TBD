@@ -5,6 +5,7 @@ import LoginForm from '../components/LoginForm.vue';
 import UserPage from '../components/UserPage.vue';
 import ViewTasks from '../components/ViewTasks.vue';
 import ViewNotifications from '../components/ViewNotifications.vue';
+import CreateTasks from '../components/CreateTasks.vue';
 
 const routes = [
   {
@@ -31,6 +32,11 @@ const routes = [
     path: '/userpage/tasks',
     name: 'ViewTasks',
     component: ViewTasks
+  },
+  {
+    path: '/userpage/tasks/create',
+    name: 'CreateTask',
+    component: CreateTasks
   },
   {
     path: '/userpage/notifications',

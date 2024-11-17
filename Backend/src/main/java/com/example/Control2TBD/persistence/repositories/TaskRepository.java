@@ -1,14 +1,16 @@
 package com.example.Control2TBD.persistence.repositories;
 
 import com.example.Control2TBD.persistence.entities.TaskEntity;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TaskRepository {
     // DEFAULT
     List<TaskEntity> getAll();
     TaskEntity getTaskById(Long id);
-    void saveTask(TaskEntity task);
+    void saveTask(String title, String description, LocalDate dueDate, Long userId);
     void updateTask(TaskEntity task);
     void deleteTask(TaskEntity task);
 

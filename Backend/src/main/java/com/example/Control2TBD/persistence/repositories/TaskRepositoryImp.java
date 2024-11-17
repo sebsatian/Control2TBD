@@ -3,8 +3,10 @@ package com.example.Control2TBD.persistence.repositories;
 import com.example.Control2TBD.persistence.entities.TaskEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -33,19 +35,21 @@ public class TaskRepositoryImp implements TaskRepository{
     }
 
     @Override
-    public void saveTask(TaskEntity task) {
+    public void saveTask(String title, String description, LocalDate dueDate, Long userId) {
         String sql = "INSERT INTO tasks (title, description, due_date, completed, user_id) " +
-                     "VALUES (:title, :description, :dueDate, :completed, :userId)";
+                "VALUES (:title, :description, :dueDate, :completed, :userId)";
         try (org.sql2o.Connection con = sql2o.open()) {
             con.createQuery(sql)
-                    .addParameter("title", task.getTitle())
-                    .addParameter("description", task.getDescription())
-                    .addParameter("dueDate", task.getDueDate())
-                    .addParameter("completed", task.getCompleted())
-                    .addParameter("userId", task.getUserId())
+                    .addParameter("title", title)
+                    .addParameter("description", description)
+                    .addParameter("dueDate", dueDate)
+                    .addParameter("completed", false) // Las tareas nuevas no están completadas por defecto
+                    .addParameter("userId", userId)
                     .executeUpdate();
         }
     }
+
+
 
     @Override
     public void updateTask(TaskEntity task) {
@@ -91,15 +95,16 @@ public class TaskRepositoryImp implements TaskRepository{
 
     @Override
     public List<TaskEntity> filterTasksByUserId(Long userId) {
-        String sql = "SELECT * FROM tasks WHERE user_id = :userId";
-        try (org.sql2o.Connection con = sql2o.open()) {
+        String sql = "SELECT id, title, description, due_date AS dueDate, completed FROM tasks WHERE user_id = :userId";
+        try (Connection con = sql2o.open()) {
             return con.createQuery(sql)
                     .addParameter("userId", userId)
                     .executeAndFetch(TaskEntity.class);
-        } catch (Exception e){
-            throw new RuntimeException("Error al filtrar tareas por ID de usuario: "+userId.toString(),e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al filtrar tareas por ID de usuario: " + userId, e);
         }
     }
+
 
     @Override
     public List<TaskEntity> filterTasksByKeyword(String keyword) {
