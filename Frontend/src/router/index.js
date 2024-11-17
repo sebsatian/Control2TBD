@@ -7,6 +7,7 @@ import ViewTasks from '../components/ViewTasks.vue';
 import ViewNotifications from '../components/ViewNotifications.vue';
 import CreateTasks from '../components/CreateTasks.vue';
 import TaskDetails from '../components/TaskDetails.vue'; // Importa el componente de detalles de tarea
+import EditTask from '../components/EditTask.vue'; // Importa el componente de edición de tarea
 
 const routes = [
   {
@@ -50,6 +51,15 @@ const routes = [
     component: TaskDetails,
     props: true, // Pasa el parámetro `id` como prop al componente
   },
+
+  {
+    path: '/userpage/tasks/:id/edit', 
+    name: 'EditTask',
+    component: EditTask,
+    props: true, 
+  },
+  
+
 ];
 
 const router = createRouter({

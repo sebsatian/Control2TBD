@@ -78,8 +78,8 @@ class TaskService {
   // Método para marcar una tarea como completada
   async markAsCompleted(taskId) {
     try {
-      const response = await axios.put(
-        `${API_URL}/task/${taskId}/complete`,
+      const response = await axios.patch(
+        `${API_URL}/task/complete/${taskId}`,
         {},
         {
           headers: {
@@ -90,13 +90,38 @@ class TaskService {
       );
       return response.data;
     } catch (error) {
-      console.error(
-        "Error al marcar tarea como completada:",
-        error.response?.data || error.message
-      );
+      console.error("Error al marcar tarea como completada:", error.response?.data || error.message);
       throw error;
     }
   }
+
+  // Actualizar tarea
+  async updateTask(taskId, taskData) {
+    await axios.put(`${API_URL}/task/edit/${taskId}`, taskData, {
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        },
+    });
 }
+
+
+async deleteTask(taskId) {
+  try {
+    await axios.delete(`${API_URL}/task/delete/${taskId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+      },
+    });
+  } catch (error) {
+    console.error("Error al eliminar la tarea:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+
+}
+
+
 
 export default new TaskService();

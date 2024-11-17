@@ -77,6 +77,25 @@ public class TaskController {
     public ResponseEntity<List<TaskEntity>> filterTasksByStatus(@RequestParam Boolean status) {
         return ResponseEntity.ok(taskService.filterTaskByStatus(status));
     }
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<TaskEntity> updateTask(@PathVariable Long id, @RequestBody TaskEntity updatedTask) {
+        TaskEntity existingTask = taskService.getTaskById(id);
+        if (existingTask == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Retornar 404 si no se encuentra
+        }
+
+        // Asegurar que el ID esté definido
+        updatedTask.setId(id);
+
+        try {
+            taskService.updateTask(updatedTask);
+            return ResponseEntity.ok(updatedTask); // Retornar la tarea actualizada
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
 
     @RequestMapping(value = "/filter/userId/{userId}", method = RequestMethod.GET)
     public ResponseEntity<List<TaskEntity>> filterTasksByUserId(@PathVariable Long userId) {
@@ -105,19 +124,25 @@ public class TaskController {
         return ResponseEntity.ok(taskService.filterTaskByKeyword(keyword));
     }
 
-    @PutMapping("/markAsDone/{id}")
-    public ResponseEntity<TaskEntity> markTaskAsDone(@PathVariable Long id) {
+    @PatchMapping("/complete/{id}")
+    public ResponseEntity<Void> completeTask(@PathVariable Long id) {
         TaskEntity foundTask = taskService.getTaskById(id);
         if (foundTask == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Si no existe, retornar 404
         }
 
-        taskService.markTaskAsDone(id);
-        return ResponseEntity.ok(foundTask);
+        try {
+            taskService.completeTask(id);
+            return ResponseEntity.noContent().build(); // Retornar 204 si se completa correctamente
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // En caso de error, retornar 500
+        }
     }
 
-    @DeleteMapping("/{id}")
+
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        System.out.println("Endpoint DELETE llamado para ID: " + id);
         TaskEntity foundTask = taskService.getTaskById(id);
         if (foundTask == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -126,4 +151,5 @@ public class TaskController {
         taskService.deleteTask(foundTask);
         return ResponseEntity.noContent().build();
     }
+
 }

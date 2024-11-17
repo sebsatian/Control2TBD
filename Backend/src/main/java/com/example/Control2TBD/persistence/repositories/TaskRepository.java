@@ -19,6 +19,6 @@ public interface TaskRepository {
     List<TaskEntity> filterTasksByUserId(Long id);
     List<TaskEntity> filterTasksByKeyword(String keyword);
 
-    // UPDATE
-    void markTaskAsDone(TaskEntity task);
+    // UPDATE -------------------------------------------------------------------------------------
+    void completeTask(Long taskId);
 }

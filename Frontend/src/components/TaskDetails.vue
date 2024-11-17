@@ -1,6 +1,10 @@
 <template>
   <div class="task-details-container">
     <h2>Detalles de la Tarea</h2>
+    <div class="actions mb-3">
+      <button @click="editTask" class="btn btn-primary me-2">Editar Tarea</button>
+      <button @click="deleteTask" class="btn btn-danger">Eliminar Tarea</button>
+    </div>
     <div v-if="task">
       <p><strong>ID:</strong> {{ task.id }}</p>
       <p><strong>Título:</strong> {{ task.title }}</p>
@@ -15,24 +19,40 @@
 </template>
 
 <script>
-// Importa el servicio para obtener los detalles de la tarea
 import TaskService from "@/services/tasks.service";
 
 export default {
   name: "TaskDetails",
-  props: ["id"], // Se recibe el ID de la tarea desde la ruta
+  props: ["id"],
   data() {
     return {
-      task: null, // Los detalles de la tarea
+      task: null,
     };
   },
   async created() {
     try {
-      // Llama al servicio para obtener los detalles de la tarea
       this.task = await TaskService.getTaskDetails(this.id);
     } catch (error) {
       console.error("Error al obtener los detalles de la tarea:", error);
     }
+  },
+  methods: {
+    editTask() {
+      // Redirige al componente EditTask pasando el ID de la tarea
+      this.$router.push(`/userpage/tasks/${this.task.id}/edit`);
+    },
+    async deleteTask() {
+      try {
+        if (confirm("¿Estás seguro de que deseas eliminar esta tarea?")) {
+          await TaskService.deleteTask(this.task.id);
+          alert("Tarea eliminada con éxito.");
+          this.$router.push("/userpage/tasks");
+        }
+      } catch (error) {
+        console.error("Error al eliminar la tarea:", error);
+        alert("Error al eliminar la tarea.");
+      }
+    },
   },
 };
 </script>
@@ -45,6 +65,10 @@ export default {
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   background-color: #f9f9f9;
+}
+
+.actions {
+  text-align: right;
 }
 
 h2 {

@@ -62,12 +62,7 @@
             >
               Completar
             </button>
-            <button
-              @click="viewTask(task.id)"
-              class="btn btn-primary btn-sm"
-            >
-              Ver Tarea
-            </button>
+            <button @click="viewTask(task.id)" class="btn btn-primary btn-sm">Ver Tarea</button>
           </td>
         </tr>
       </tbody>
@@ -108,36 +103,31 @@ export default {
   methods: {
     async fetchTasks() {
       try {
-        const tasks = await TaskService.filterTasksByUserId(
-          localStorage.getItem("userId")
-        );
+        const tasks = await TaskService.filterTasksByUserId(localStorage.getItem("userId"));
         this.tasks = tasks;
       } catch (error) {
-        console.error(
-          "Error al obtener las tareas:",
-          error.response?.data || error.message
-        );
+        console.error("Error al obtener las tareas:", error.response?.data || error.message);
+      }
+    },
+    async markAsCompleted(taskId) {
+      try {
+        await TaskService.markAsCompleted(taskId);
+        alert("Tarea completada exitosamente.");
+        this.fetchTasks(); // Refresca la lista de tareas
+      } catch (error) {
+        console.error("Error al completar la tarea:", error.response?.data || error.message);
+        alert("Error al completar la tarea.");
       }
     },
     goToCreateTask() {
       this.$router.push("/userpage/tasks/create");
     },
-    markAsCompleted(taskId) {
-      // Aquí agregarías la lógica para marcar una tarea como completada
-      console.log("Tarea completada:", taskId);
-    },
     viewTask(taskId) {
-      // Redirige a una página de detalle de la tarea
       this.$router.push(`/userpage/tasks/${taskId}`);
     },
   },
   mounted() {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      this.fetchTasks();
-    } else {
-      console.error("No se encontró el userId en el localStorage");
-    }
+    this.fetchTasks();
   },
 };
 </script>

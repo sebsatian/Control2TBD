@@ -57,20 +57,20 @@ public class TaskRepositoryImp implements TaskRepository{
 
     @Override
     public void updateTask(TaskEntity task) {
-        String sql = "UPDATE tasks SET title = :title, description = :description, due_date = :dueDate, " +
-                "completed = :completed WHERE id = :id";
+        String sql = "UPDATE tasks SET title = :title, description = :description, due_date = :dueDate " +
+                "WHERE id = :id";
         try (org.sql2o.Connection con = sql2o.open()) {
             con.createQuery(sql)
                     .addParameter("title", task.getTitle())
                     .addParameter("description", task.getDescription())
                     .addParameter("dueDate", task.getDueDate())
-                    .addParameter("completed", task.getCompleted())
                     .addParameter("id", task.getId())
                     .executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException("Error al actualizar la tarea con ID: " + task.getId(), e);
         }
     }
+
 
     @Override
     public void deleteTask(TaskEntity task) {
@@ -125,14 +125,16 @@ public class TaskRepositoryImp implements TaskRepository{
     }
 
     // UPDATE -------------------------------------------------------------------------------------
-    public void markTaskAsDone(TaskEntity task){
-        String sql = "UPDATE tasks SET completed = 1 WHERE id = :id";
-        try (org.sql2o.Connection con = sql2o.open()){
+    @Override
+    public void completeTask(Long taskId) {
+        String sql = "UPDATE tasks SET completed = true WHERE id = :id";
+        try (org.sql2o.Connection con = sql2o.open()) {
             con.createQuery(sql)
-                    .addParameter("id",task.getId())
+                    .addParameter("id", taskId)
                     .executeUpdate();
-        } catch (Exception e){
-            throw new RuntimeException("Error al actualizar estado de Tarea con ID: "+task.getId(),e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al marcar como completada la tarea con ID: " + taskId, e);
         }
     }
+
 }

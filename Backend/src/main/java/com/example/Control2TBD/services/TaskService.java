@@ -48,14 +48,9 @@ public class TaskService {
     }
 
     // UPDATE
-    public void markTaskAsDone(TaskEntity task){
-        taskRepository.markTaskAsDone(task);
+    public void completeTask(Long taskId) {
+        taskRepository.completeTask(taskId);
     }
 
-    public void markTaskAsDone(Long id){
-        TaskEntity foundTask = getTaskById(id);
-        if (!(foundTask == null)){
-            markTaskAsDone(foundTask);
-        }
-    }
+
 }
