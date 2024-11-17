@@ -2,26 +2,17 @@ package com.example.Control2TBD.controllers;
 
 import com.example.Control2TBD.persistence.entities.TaskEntity;
 import com.example.Control2TBD.services.TaskService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequestMapping("/task")
 @CrossOrigin("*")
 public class TaskController {
-
     @Autowired
     private TaskService taskService;
 
