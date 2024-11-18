@@ -58,3 +58,13 @@ Nota: Las tablas y la población inicial se crean al momento de ejecutar el back
 ```bash
   npm run lint
 ```
+
+## Versiones
+
+- Project: Maven
+- Language: Java
+- Spring Boot: 3.3.2
+- Packaging: Jar
+- Java: 17
+
+
