@@ -21,7 +21,7 @@ Control 2 Taller Base de Datos.
 
 - Luego de realizar los cambios, se debe dar a ejecutar el BACKEND.
 
-Nota: Las tablas y la población inicial se crean al momento de ejecutar el backend.
+Nota: Las tablas y la población inicial se crean al momento de insertar el script y correrlo en pgadmin 4.
 
 ## FRONTEND
 
