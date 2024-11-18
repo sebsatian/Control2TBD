@@ -29,7 +29,7 @@ Nota: Las tablas y la población inicial se crean al momento de ejecutar el back
 
 - Herramientas como visual studio code.
 - Tener instalado algun package manager.
-    - Instalar node.js
+    - Instalar node.js.
 
 ### Ir a la carpeta del frontend.
 
