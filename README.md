@@ -34,7 +34,7 @@ Nota: Las tablas y la población inicial se crean al momento de ejecutar el back
 ### Ir a la carpeta del frontend.
 
 ```bash
-  cd ./frontend
+  cd ./Frontend
 ```
 ### Instalación de paquetes.
 
