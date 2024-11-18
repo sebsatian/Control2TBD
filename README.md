@@ -31,12 +31,12 @@ Nota: Las tablas y la población inicial se crean al momento de ejecutar el back
 - Tener instalado algun package manager.
     - Instalar node.js
 
-### Ir a la carpeta del frontend
+### Ir a la carpeta del frontend.
 
 ```bash
   cd ./frontend
 ```
-### Instalación de paquetes
+### Instalación de paquetes.
 
 ```bash
   npm install
@@ -47,13 +47,13 @@ Nota: Las tablas y la población inicial se crean al momento de ejecutar el back
   npm run serve
 ```
 
-### Compilación y minimización de producción
+### Compilación y minimización de producción.
 
 ```bash
   npm run build
 ```
 
-### Lints y archivos de arreglos
+### Lints y archivos de arreglos.
 
 ```bash
   npm run lint
