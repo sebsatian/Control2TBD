@@ -3,33 +3,27 @@
 
 Control 2 Taller Base de Datos.
 
+## DataBase
+- Crear la base de datos en PostgreSQL (pgAdmin 4) con el nombre de "Control2TBD":
+      - En "\Backend\src\main\resources\datos" encontrarás el script "createDB.sql" para crear la base de datos.
+      - Ejecutar la primera linea como una query en pgAdmin 4 (o directamente usar la intefaz de usuario para crearla con el nombre especificado).
+      - Ejecutar el resto del script "createDB.sql" como query dentro de la base de datos "Control2TBD" creada.
 
 
 ## BACKEND
+- En aplication.properties se define el puerto que se usará para el backend, por defecto será el 8070.
 
-- Crear la base de datos en postgreSQL (pgAdmin 4) con el nombre de "Control2TBD".
-- El proyecto se encuentra separado tanto su BACKEND y FRONTEND.
-- Una vez ingresado al BACKEND se debe ir al archivo aplication.propertiers, debe asegurarse de que el puerto que se este ocupando este libre para su uso.
+- En la ruta principal de la aplicación, en el package "config" se encuentra el archivo "DataBaseContext.java", 
+  el cual contiene la configuración de la base de datos, en este caso PostgreSQL. De ser necesario, deberás ingresar tus
+  propias credenciales y/o el puerto que estés utilizando para la base de datos.
 
-    - El puerto donde se esta ejecutando es el 8070.
-
-- Luego ingresar a la carpeta config y al archivo "DataBaseContext.java", en el se debe cambiar el nombre de usuario y la contraseña según se disponga en su configuración. 
-- De ejemplo esta puesto colocado lo siguiente:
-    - Usuario:  postgres (cambiar).
-    - Contraseña: admin  (cambiar).
-    - localhost: 5432 por defecto.
-
-- Luego de realizar los cambios, se debe dar a ejecutar el BACKEND.
-
-Nota: Las tablas y la población inicial se crean al momento de insertar el script y correrlo en pgadmin 4.
+- Si todo está correctamente configurado, al ejecutar "Control2TBDApplication.java" se iniciará el backend en el puerto especificado.
 
 ## FRONTEND
 
 ### Requisitos:
 
-- Herramientas como visual studio code.
-- Tener instalado algun package manager.
-    - Instalar node.js.
+NodeJS (npm):
 
 ### Ir a la carpeta del frontend.
 
